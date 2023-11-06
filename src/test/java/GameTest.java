@@ -1,12 +1,12 @@
 import org.example.Game;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Random;
@@ -29,12 +29,17 @@ public class GameTest {
     @Mock
     Random random;
 
+    private ByteArrayOutputStream out;
+
+    @Before
+    public void setup() {
+        out = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(out));
+    }
+
     @Test
     public void testCloseGameOnQuit() {
         when(scanner.nextLine()).thenReturn("Quit");
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
 
         game.play();
 
@@ -45,9 +50,6 @@ public class GameTest {
     public void testRockWinsAgainstScissors() {
         when(scanner.nextLine()).thenReturn("Rock").thenReturn("Quit");
         when(random.nextInt(3)).thenReturn(OPTION_SCISSORS);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
 
         game.play();
 
@@ -60,9 +62,6 @@ public class GameTest {
         when(scanner.nextLine()).thenReturn("Scissors").thenReturn("Quit");
         when(random.nextInt(3)).thenReturn(OPTION_PAPER);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
-
         game.play();
 
         Assert.assertTrue(out.toString().contains("Computer chose paper"));
@@ -73,9 +72,6 @@ public class GameTest {
     public void testPaperWinsAgainstRock() {
         when(scanner.nextLine()).thenReturn("Paper").thenReturn("Quit");
         when(random.nextInt(3)).thenReturn(OPTION_ROCK);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
 
         game.play();
 
@@ -88,9 +84,6 @@ public class GameTest {
         when(scanner.nextLine()).thenReturn("Rock").thenReturn("Quit");
         when(random.nextInt(3)).thenReturn(OPTION_ROCK);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
-
         game.play();
 
         Assert.assertTrue(out.toString().contains("Computer chose rock"));
@@ -101,9 +94,6 @@ public class GameTest {
     public void testComputerWins() {
         when(scanner.nextLine()).thenReturn("Rock").thenReturn("Quit");
         when(random.nextInt(3)).thenReturn(OPTION_PAPER);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
 
         game.play();
 
