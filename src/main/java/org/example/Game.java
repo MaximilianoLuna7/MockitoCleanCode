@@ -11,28 +11,29 @@ public class Game {
     public void play() {
         //start game
         printGameRules();
-        String choice = input.nextLine().toLowerCase(); //prompt response
+        String choice = input.nextLine().toUpperCase(); //prompt response
 
         //initialize variables
         ScoreBoard scoreBoard = new ScoreBoard();
 
         while (!choice.equals("quit")) //do the following if the user does not put in "quit"
         {
-            int choicenum = getChoicenum(choice);
-            if (choicenum == 0)//not valid responses
+            GameOption playerChoice = getPlayerChoice(choice);
+            if (playerChoice == null)//not valid responses
             {
-                while(choicenum == 0) //continue while user input is still not valid
+                while(playerChoice == null) //continue while user input is still not valid
                 {
                     System.out.println("Sorry, it looks like you didn't enter a correct input. Try again.");
-                    choice = input.nextLine().toLowerCase();
-                    choicenum = getChoicenum(choice);
+                    choice = input.nextLine().toUpperCase();
+                    playerChoice = getPlayerChoice(choice);
                 }
             }
-            int compnum = getChoiceComputer();
 
-            decideWinner(choicenum, compnum, scoreBoard);
+            GameOption computerChoice = getComputerChoice();
+
+            decideWinner(playerChoice, computerChoice, scoreBoard);
             printResults(scoreBoard);
-            choice = input.nextLine().toLowerCase(); //prompt for new user input
+            choice = input.nextLine().toUpperCase(); //prompt for new user input
         }
     }
 
@@ -42,23 +43,23 @@ public class Game {
         System.out.println("Say \"Rock\", \"Paper\", or \"Scissors\" to indicate your choice. Otherwise say \"Quit\" to quit.");
     }
 
-    private static void decideWinner(int choicenum, int compnum, ScoreBoard scoreBoard) {
+    private static void decideWinner(GameOption choicenum, GameOption compnum, ScoreBoard scoreBoard) {
         if(choicenum == compnum) //tie cases
         {
             System.out.println("It's a tie");
             scoreBoard.incrementTies();
         }
-        else if (choicenum == 1 && compnum == 3) //user wins rock vs scissors
+        else if (choicenum == GameOption.ROCK && compnum == GameOption.SCISSORS)
         {
             System.out.println("you win!");
             scoreBoard.incrementWins();
         }
-        else if (choicenum == 3 && compnum == 2) //user wins scissors vs paper
+        else if (choicenum == GameOption.SCISSORS && compnum == GameOption.PAPER)
         {
             System.out.println("you win!");
             scoreBoard.incrementWins();
         }
-        else if (choicenum == 2 && compnum ==1) //user wins paper vs rock
+        else if (choicenum == GameOption.PAPER && compnum == GameOption.ROCK)
         {
             System.out.println("you win!");
             scoreBoard.incrementWins();
@@ -70,34 +71,27 @@ public class Game {
         }
     }
 
-    private int getChoicenum(String choice) {
-        int choicenum = 0;
-        if (choice.equals("rock"))
-        {
-            choicenum = 1;
-        }
-        else if (choice.equals("paper"))
-        {
-            choicenum = 2;
-        }
-        else if (choice.equals("scissors"))
-        {
-            choicenum = 3;
-        }
-        else if (choice.equals("quit"))
-            System.exit(0);
+    private GameOption getPlayerChoice(String choice) {
+        GameOption selectedOption = null;
 
-        return choicenum;
+        if (choice.equalsIgnoreCase("quit")) {
+            System.exit(0);
+        }
+
+        try {
+            selectedOption = GameOption.valueOf(choice);
+        } catch (Exception e) {
+            return null;
+        }
+        return selectedOption;
     }
 
-    private int getChoiceComputer() {
-        int compnum = (int) (random.nextInt(3)) + 1;//computer generate random num
-        //print computer choice
-        if (compnum == 1) System.out.println("Computer chose rock");
-        if (compnum == 2) System.out.println("Computer chose paper");
-        if (compnum == 3) System.out.println("Computer chose scissors");
+    private GameOption getComputerChoice() {
+        GameOption option = GameOption.values()[random.nextInt(3)];
 
-        return compnum;
+        System.out.println("Computer chose " + option.toString().toLowerCase());
+
+        return option;
     }
 
     private static void printGameRules() {
